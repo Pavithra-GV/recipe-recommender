@@ -47,6 +47,25 @@ def semantic_match_fast(recipe_ings, user_ings, threshold=0.6):
     matches = (sim.max(axis=1) >= threshold).sum()
     return int(matches)
 
+def semantic_missing_ingredients(recipe_ings, user_ings, threshold=0.6):
+    missing = []
+
+    user_vecs = [get_embedding(i) for i in user_ings if get_embedding(i) is not None]
+
+    for ing in recipe_ings:
+        emb = get_embedding(ing)
+        if emb is None or not user_vecs:
+            missing.append(ing)
+            continue
+
+        sim = cosine_similarity([emb], user_vecs).max()
+
+        if sim < threshold:
+            missing.append(ing)
+
+    return missing
+
+
 def clean_instructions(text):
     if pd.isna(text):
         return []
@@ -91,7 +110,7 @@ if st.button("🔍 Get Recipes"):
             st.markdown(f"### {row['Name']}")
 
             have = set(row["clean_ingredients"]).intersection(user_ingredients)
-            missing = row["missing_ings"]
+            missing = semantic_missing_ingredients(row["clean_ingredients"], user_ingredients)
 
             st.write("**You already have:**", ", ".join(have) if have else "None")
             st.write("**You need to buy:**", ", ".join(missing) if missing else "Nothing 🎉")
