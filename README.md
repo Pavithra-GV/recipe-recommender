@@ -30,6 +30,12 @@ This project is an intelligent recipe recommendation system designed to help stu
 
 ---
 
+## Dataset link 
+
+- https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews
+
+---
+
 ## How to Download and Run the Project
 
 ### 1. Clone the Repository
